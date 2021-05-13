@@ -126,21 +126,8 @@ for line in f:
     else:
         print(line.strip('\n'), file = new_f)
 
-
-
 #пока что считаем что подается пустой файл с одним слоем дефолт
 #разобраться с лишним <TIME_ORDER/>
 
 f.close()
 new_f.close()
-
-
-
-
-
-
-
-
-
-
-
