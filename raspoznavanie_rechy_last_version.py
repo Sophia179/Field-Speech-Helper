@@ -116,7 +116,7 @@ NYtimes = list()
 WWtimes = list()
 end_of_frase = list()
 WWc = 0
-for chunk in file['response']['chunks']:
+for chunk in req['response']['chunks']:
     count += 1
     if count%2 == 0:
         if len(chunk['alternatives']) == 1:
