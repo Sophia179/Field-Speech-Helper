@@ -14,16 +14,6 @@ wav2ogg = '%s oggenc short.wav' % (way_to_ogg)
 os.system(shortening)
 os.system(wav2ogg)
 
-#запись конфигов для облачной папки
-%%writefile ~/.aws/credentials
-[default]
-aws_access_key_id=SelVOMYDovEilk20CWIs
-aws_secret_access_key=SrzK1VdRwekmSmLI2lGR9HDh-ibulV_tJ4GBEkGf
-
-%%writefile ~/.aws/config
-[default]
-region=ru-central1
-
 import boto3
 
 AUDIO_FNAME = "short.ogg"
