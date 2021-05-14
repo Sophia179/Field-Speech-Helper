@@ -1,3 +1,90 @@
+#обрезка файла и перевод в огг
+import os
+
+way_to_ffmpeg = input("Введите путь к ffmpeg.exe: ")
+way_to_audio = input("Введите путь к аудиофайлу в формате wav: ")
+beginning_time = input("Введите время, с которого начать распознавание (в секундах): ")
+ending_time = input("Введите время, на котором закончить распознавание (в секундах): ")
+way_to_ogg = input("Введите путь к oggenc.exe: ")
+total_time = int(ending_time) - int(beginning_time)
+
+shortening = '%s -ss %s -t %s -i %s short.wav' % (way_to_ffmpeg, beginning_time, total_time, way_to_audio)
+wav2ogg = '%s oggenc short.wav' % (way_to_ogg)
+
+os.system(shortening)
+os.system(wav2ogg)
+#
+#запись конфигов для облачной папки
+%%writefile ~/.aws/credentials
+[default]
+aws_access_key_id=SelVOMYDovEilk20CWIs
+aws_secret_access_key=SrzK1VdRwekmSmLI2lGR9HDh-ibulV_tJ4GBEkGf
+
+%%writefile ~/.aws/config
+[default]
+region=ru-central1
+
+import boto3
+
+AUDIO_FNAME = "file.ogg"                                                                                    #какое имя нам нужно???????
+
+session = boto3.session.Session()
+s3 = session.client(
+    service_name='s3',
+    endpoint_url='https://storage.yandexcloud.net'
+)
+
+bucket_name = 'field-asr-bucket'
+file_key = AUDIO_FNAME
+
+# Загрузить объекты в бакет
+s3.upload_file(AUDIO_FNAME, 
+               bucket_name, 
+               file_key)
+
+#for key in s3.list_objects(Bucket=bucket_name)['Contents']:
+ #   print(key)
+
+import requests
+import time
+import json
+
+# Укажите ваш API-ключ и ссылку на аудиофайл в Object Storage.                                              #это ху
+key = 'AQVNw6ushYn73WIVZtDqI97BNTyxYtwkTniz_7qP'
+filelink = f"https://storage.yandexcloud.net/field-asr-bucket/{file_key}"
+POST = "https://transcribe.api.cloud.yandex.net/speech/stt/v2/longRunningRecognize"
+
+body ={
+    "config": {
+        "specification": {
+            "languageCode": "ru-RU"
+        }
+    },
+    "audio": {
+        "uri": filelink
+    }
+}
+
+# Если вы хотите использовать IAM-токен для аутентификации, замените Api-Key на Bearer.
+header = {'Authorization': 'Api-Key {}'.format(key)}
+
+# Отправить запрос на распознавание.
+req = requests.post(POST, headers=header, json=body)
+data = req.json()
+
+id = data['id']
+
+# Запрашивать на сервере статус операции, пока распознавание не будет завершено.
+while True:
+    GET = "https://operation.api.cloud.yandex.net/operations/{id}"
+    req = requests.get(GET.format(id=id), headers=header)
+    req = req.json()
+
+    if req['done']:
+        break
+    print("Not ready")
+    time.sleep(1)
+
 time_slot ="""        <TIME_SLOT TIME_SLOT_ID="ts%s" TIME_VALUE="%s"/>"""    #два пропуска, где 1 - номер, 2 - временная отметка
 annotation = """        <ANNOTATION>
             <ALIGNABLE_ANNOTATION ANNOTATION_ID="a%s"
@@ -24,8 +111,6 @@ def timer_id(time_list):
             id+=times[i]
         time_id_new.append(int(float(id)*1000))
     return(time_id_new)
-
-import json
 
 #читаем джейсонку, создаем списки фраз, слов, временных отметок начала слов и концов фраз
 read_file=open('req.json', 'r', encoding='utf-8')
