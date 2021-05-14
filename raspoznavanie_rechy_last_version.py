@@ -59,26 +59,6 @@ new_name_of_file = input("Введите имя желанного файла. �
 f = open(name_of_file, 'r', encoding='utf-8')
 new_f = open(new_name_of_file, 'w', encoding='utf-8')
 for line in f:
-#   if "<TIME_ORDER" in line and "/>" not in line:
- #       print(line.strip('\n'), file = new_f)
-  #      count_of_time_slot = 1
-   #     for time in word_times:
-    #        time_line = time_slot % (count_of_time_slot, time)
-     #       print(time_line, file = new_f)
-      #      count_of_time_slot += 1
-       # print("    </TIME_ORDER>", file = new_f)
-#    if "<TIER" in line and not "/>" in line:
- #       print(line.strip('\n'), file = new_f)
-  #      count_of_annotation = 1
-   #     count_of_start = 0
-    #    for frase in phrases:
-     #       start = count_of_start + 1
-      #      end = count_of_start + 2
-       #     annotation_line = annotation % (count_of_annotation, start, end, frase)
-        #    print(annotation_line, file = new_f)
-         #   count_of_annotation += 1
-          #  count_of_start += 2
-        #print("    </TIER>", file = new_f)
     if "<TIME_ORDER/>" in line:
         new_line = "    <TIME_ORDER>"
         print(new_line, file = new_f)
@@ -125,9 +105,6 @@ for line in f:
         print(type_of_layer, file = new_f)
     else:
         print(line.strip('\n'), file = new_f)
-
-#пока что считаем что подается пустой файл с одним слоем дефолт
-#разобраться с лишним <TIME_ORDER/>
 
 f.close()
 new_f.close()
