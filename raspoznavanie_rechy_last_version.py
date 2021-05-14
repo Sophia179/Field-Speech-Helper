@@ -13,7 +13,7 @@ wav2ogg = '%s oggenc short.wav' % (way_to_ogg)
 
 os.system(shortening)
 os.system(wav2ogg)
-#
+
 #запись конфигов для облачной папки
 %%writefile ~/.aws/credentials
 [default]
@@ -26,7 +26,7 @@ region=ru-central1
 
 import boto3
 
-AUDIO_FNAME = "file.ogg"                                                                                    #какое имя нам нужно???????
+AUDIO_FNAME = "short.ogg"
 
 session = boto3.session.Session()
 s3 = session.client(
@@ -42,14 +42,12 @@ s3.upload_file(AUDIO_FNAME,
                bucket_name, 
                file_key)
 
-#for key in s3.list_objects(Bucket=bucket_name)['Contents']:
- #   print(key)
-
 import requests
 import time
 import json
 
-# Укажите ваш API-ключ и ссылку на аудиофайл в Object Storage.                                              #это ху
+
+# Укажите ваш API-ключ и ссылку на аудиофайл в Object Storage.
 key = 'AQVNw6ushYn73WIVZtDqI97BNTyxYtwkTniz_7qP'
 filelink = f"https://storage.yandexcloud.net/field-asr-bucket/{file_key}"
 POST = "https://transcribe.api.cloud.yandex.net/speech/stt/v2/longRunningRecognize"
@@ -85,6 +83,15 @@ while True:
     print("Not ready")
     time.sleep(1)
 
+# Показать полный ответ сервера в формате JSON.
+#print("Response:")
+#print(json.dumps(req, ensure_ascii=False, indent=2))
+
+# Показать только текст из результатов распознавания.
+#print("Text chunks:")
+#for chunk in req['response']['chunks']:
+ #   print(chunk['alternatives'][0]['text'])
+
 time_slot ="""        <TIME_SLOT TIME_SLOT_ID="ts%s" TIME_VALUE="%s"/>"""    #два пропуска, где 1 - номер, 2 - временная отметка
 annotation = """        <ANNOTATION>
             <ALIGNABLE_ANNOTATION ANNOTATION_ID="a%s"
@@ -106,15 +113,13 @@ word_annotation = """        <ANNOTATION>
 def timer_id(time_list):
     time_id_new=[]
     for times in time_list:
-        id=''
+        _id=''
         for i in range(len(times)-1):
-            id+=times[i]
+            _id+=times[i]
         time_id_new.append(int(float(id)*1000))
     return(time_id_new)
 
 #читаем джейсонку, создаем списки фраз, слов, временных отметок начала слов и концов фраз
-read_file=open('req.json', 'r', encoding='utf-8')
-file=json.load(read_file)
 count = 0
 phrases = list()
 words = list()
@@ -123,18 +128,19 @@ WWtimes = list()
 end_of_frase = list()
 WWc = 0
 for chunk in file['response']['chunks']:
-    count+=1
-    if count%2==0:
-        phrases.append(chunk['alternatives'][0]['text'])
-        NYtimes.append(chunk['alternatives'][0]['words'][0]['startTime'])
-        NYtimes.append(chunk['alternatives'][0]['words'][-1]['endTime'])
-        WWc+=len(chunk['alternatives'][0]['words'])+1
-        for i in range(len(chunk['alternatives'][0]['words'])):
-            WWtimes.append(chunk['alternatives'][0]['words'][i]['startTime'])
-            words.append(chunk['alternatives'][0]['words'][i]['word'])
-        WWtimes.append(chunk['alternatives'][0]['words'][-1]['endTime'])
-        end_of_frase.append(WWc)
-slot_id_new = timer_id(NYtimes)     #что это
+    count += 1
+    if count%2 == 0:
+        if len(chunk['alternatives']) == 1:
+            phrases.append(chunk['alternatives'][0]['text'])
+            NYtimes.append(chunk['alternatives'][0]['words'][0]['startTime'])
+            NYtimes.append(chunk['alternatives'][0]['words'][-1]['endTime'])
+            WWc += len(chunk['alternatives'][0]['words'])+1
+            for i in range(len(chunk['alternatives'][0]['words'])):
+                WWtimes.append(chunk['alternatives'][0]['words'][i]['startTime'])
+                words.append(chunk['alternatives'][0]['words'][i]['word'])
+            WWtimes.append(chunk['alternatives'][0]['words'][-1]['endTime'])
+            end_of_frase.append(WWc)
+slot_id_new = timer_id(NYtimes)
 word_times = timer_id(WWtimes)
 read_file.close()
 
