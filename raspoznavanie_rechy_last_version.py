@@ -1,3 +1,5 @@
+print("Добро пожаловать!")
+
 #обрезка файла и перевод в огг
 import os
 
@@ -5,18 +7,18 @@ way_to_ffmpeg = input("Введите путь к ffmpeg.exe: ")
 way_to_audio = input("Введите путь к аудиофайлу в формате wav: ")
 beginning_time = input("Введите время, с которого начать распознавание (в секундах): ")
 ending_time = input("Введите время, на котором закончить распознавание (в секундах): ")
-way_to_ogg = input("Введите путь к oggenc.exe: ")
+way_to_ogg = input("Введите путь к opusenc.exe: ")
 total_time = int(ending_time) - int(beginning_time)
 
-shortening = '%s -ss %s -t %s -i %s short.wav' % (way_to_ffmpeg, beginning_time, total_time, way_to_audio)
-wav2ogg = '%s oggenc short.wav' % (way_to_ogg)
+shortening = '%s -ss %s -t %s -i %s new.wav' % (way_to_ffmpeg, beginning_time, total_time, way_to_audio)
+wav2ogg = '%s new.wav audio.ogg' % (way_to_ogg)
 
 os.system(shortening)
 os.system(wav2ogg)
 
 import boto3
 
-AUDIO_FNAME = "short.ogg"
+AUDIO_FNAME = r"audio.ogg"
 
 session = boto3.session.Session()
 s3 = session.client(
@@ -32,9 +34,13 @@ s3.upload_file(AUDIO_FNAME,
                bucket_name, 
                file_key)
 
+#for key in s3.list_objects(Bucket=bucket_name)['Contents']:
+ #   print(key)
+
 import requests
 import time
 import json
+
 
 # Укажите ваш API-ключ и ссылку на аудиофайл в Object Storage.
 key = 'AQVNw6ushYn73WIVZtDqI97BNTyxYtwkTniz_7qP'
@@ -105,7 +111,7 @@ def timer_id(time_list):
         _id=''
         for i in range(len(times)-1):
             _id+=times[i]
-        time_id_new.append(int(float(id)*1000))
+        time_id_new.append(int(float(_id)*1000))
     return(time_id_new)
 
 #читаем джейсонку, создаем списки фраз, слов, временных отметок начала слов и концов фраз
@@ -131,7 +137,6 @@ for chunk in req['response']['chunks']:
             end_of_frase.append(WWc)
 slot_id_new = timer_id(NYtimes)
 word_times = timer_id(WWtimes)
-read_file.close()
 
 #принимаем пустой еаф пользователя (только слой дефолт), переписываем построчно, добавляем временные слоты, аннотацию фраз, слов, присваиваем слоям свойства аттеранс и вордс, связываем слои
 name_of_file = input("Введите имя вашего файла. Например, name.eaf  : " )
@@ -188,3 +193,5 @@ for line in f:
 
 f.close()
 new_f.close()
+
+print("Бегите смотреть ваш идеальный файлик! Спасибо, что воспользовались FiSH!")
