@@ -46,7 +46,6 @@ import requests
 import time
 import json
 
-
 # Укажите ваш API-ключ и ссылку на аудиофайл в Object Storage.
 key = 'AQVNw6ushYn73WIVZtDqI97BNTyxYtwkTniz_7qP'
 filelink = f"https://storage.yandexcloud.net/field-asr-bucket/{file_key}"
