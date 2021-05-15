@@ -11,11 +11,11 @@
 
 ## Что нужно для работы программы:
   1. В пользователях должна быть создана папка `.aws`, в которой находятся два файла: `credentials` и `config` (без расширения). В файле `credentials` должен находиться следующий текст:
-  `[default]\n
-  aws_access_key_id=SelVOMYDovEilk20CWIs\n
-  aws_secret_access_key=SrzK1VdRwekmSmLI2lGR9HDh-ibulV_tJ4GBEkGf`\n
+  `[default]`
+  `aws_access_key_id=SelVOMYDovEilk20CWIs`
+  `aws_secret_access_key=SrzK1VdRwekmSmLI2lGR9HDh-ibulV_tJ4GBEkGf`
  В файле `config` должен находиться следующий текст:
-  `[default]\n
-  region=ru-central1`\n
+  `[default]`
+  `region=ru-central1`
   2. У пользователя должны быть установлены `ffmpeg` (для обрезки аудио) и `vorbis-tools` (для перевода аудио в формат `ogg`).
   3. У пользователя должен быть создан файл в ELAN данным аудио. Это должен быть **пустой файл со слоем `default`** (то есть только что созданный новый файл, любые правки (в том числе удаление слоя `default` или внесение какой-либо разметки) могут помешать работе программы).
