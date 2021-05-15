@@ -106,12 +106,12 @@ word_annotation = """        <ANNOTATION>
         </ANNOTATION>"""                        # 4 пропуска, где 1 - айди, 2 - время начала, 3 - время конца, 4 - слово
 
 def timer_id(time_list):
-    time_id_new=[]
+    time_id_new = []
     for times in time_list:
-        _id=''
+        _id = ''
         for i in range(len(times)-1):
-            _id+=times[i]
-        time_id_new.append(int(float(_id)*1000))
+            _id += times[i]
+        time_id_new.append(int(float(_id)*1000) + beginning_time)
     return(time_id_new)
 
 #читаем джейсонку, создаем списки фраз, слов, временных отметок начала слов и концов фраз
